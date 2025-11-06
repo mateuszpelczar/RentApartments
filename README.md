@@ -1,2 +1,6 @@
 # RentApartments
-Prosty prototyp aplikacji webowej do wynajmu mieszkań
+Aplikacja webowa do wynajmu mieszkań stworzona w technologiach : 
+-React/TypeScript 
+-Java Spring Boot
+-PostgreSQL
+-MongoDB
