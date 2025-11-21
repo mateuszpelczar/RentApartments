@@ -1,5 +1,5 @@
 # RentApartments
-Aplikacja webowa do wynajmu mieszkań stworzona w technologiach : 
+Prototyp aplikacji webowej do wynajmu mieszkań stworzona w technologiach : 
 -React/TypeScript 
 -Java Spring Boot
 -PostgreSQL
