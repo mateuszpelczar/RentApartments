@@ -1,6 +1,6 @@
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
+wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -18,6 +18,11 @@ target/
 *.iws
 *.iml
 *.ipr
+.env
+.env.local
+.env.*.local
+application.properties
+application-*.properties
 
 ### NetBeans ###
 /nbproject/private/
@@ -31,3 +36,10 @@ build/
 
 ### VS Code ###
 .vscode/
+.env
+.env.local
+.env.*.local
+application.properties
+application-*.properties
+
+.fake
