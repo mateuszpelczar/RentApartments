@@ -48,6 +48,7 @@ public class SecurityConfig {
       }))
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(authz -> authz
+          .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
           .requestMatchers("/api/auth/**").permitAll()
           .requestMatchers("/api/user/{id}").permitAll()
           .requestMatchers("/api/user/**").authenticated()
@@ -56,7 +57,7 @@ public class SecurityConfig {
           .requestMatchers("/mieszkania/filter/**").permitAll()
           .requestMatchers("/user/**").authenticated()
           .requestMatchers("/rezerwacje/**").authenticated()
-          .requestMatchers("/chat/**").authenticated()
+          .requestMatchers("/api/chat/**").authenticated()
           .requestMatchers("/admin/**").hasRole("ADMIN")
           .anyRequest().authenticated()
       )

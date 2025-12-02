@@ -7,6 +7,7 @@ import com.example.RentApartments.model.User;
 import com.example.RentApartments.repository.jpa.MieszkanieRepository;
 import com.example.RentApartments.repository.jpa.AdresRepository;
 import com.example.RentApartments.repository.jpa.UserRepository;
+import com.example.RentApartments.repository.jpa.RezerwacjaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +20,27 @@ public class MieszkanieService {
     private final AdresRepository adresRepository;
     private final UserRepository userRepository;
     private final LogService logService;
+    private final ZdjecieService zdjecieService;
+    private final ChatService chatService;
+    private final RezerwacjaService rezerwacjaService;
+    private final RezerwacjaRepository rezerwacjaRepository;
 
     public MieszkanieService(MieszkanieRepository mieszkanieRepository,
                              AdresRepository adresRepository,
                              UserRepository userRepository,
-                             LogService logService) {
+                             LogService logService,
+                             ZdjecieService zdjecieService,
+                             ChatService chatService,
+                             RezerwacjaService rezerwacjaService,
+                             RezerwacjaRepository rezerwacjaRepository) {
         this.mieszkanieRepository = mieszkanieRepository;
         this.adresRepository = adresRepository;
         this.userRepository = userRepository;
         this.logService = logService;
+        this.zdjecieService = zdjecieService;
+        this.chatService = chatService;
+        this.rezerwacjaService = rezerwacjaService;
+        this.rezerwacjaRepository = rezerwacjaRepository;
     }
 
     public MieszkanieDTO createMieszkanie(MieszkanieDTO dto, Long userId) {
@@ -121,8 +134,26 @@ public class MieszkanieService {
             throw new RuntimeException("Unauthorized - tylko wlasciciel moze usunac");
         }
 
+        // Cascade delete: Usuń wszystkie zdjęcia dla tego mieszkania
+        List<com.example.RentApartments.model.Zdjecie> zdjecia = zdjecieService.getMieszkaniePhotos(id);
+        for (com.example.RentApartments.model.Zdjecie z : zdjecia) {
+            zdjecieService.deletePhoto(z.getId(), userId);
+        }
+
+        // Cascade delete: Usuń wszystkie czaty dla tego mieszkania
+        List<com.example.RentApartments.model.Chat> chats = chatService.getMieszkanieChats(id);
+        for (com.example.RentApartments.model.Chat c : chats) {
+            chatService.deleteChat(c.getId());
+        }
+
+        // Cascade delete: Usuń wszystkie rezerwacje dla tego mieszkania
+        List<com.example.RentApartments.model.Rezerwacja> rezerwacje = rezerwacjaRepository.findByMieszkanieId(id);
+        for (com.example.RentApartments.model.Rezerwacja r : rezerwacje) {
+            rezerwacjaService.cancelRezerwacja(r.getId());
+        }
+
         logService.logEvent(userId, "OGLOSZENIE_USUNIETE", 
-            "Ogłoszenie ID: " + id + " (\"" + mieszkanie.getTytul() + "\") została usunięte");
+            "Ogłoszenie ID: " + id + " (\"" + mieszkanie.getTytul() + "\") została usunięte wraz z powiązanymi zdjęciami, czatami i rezerwacjami");
 
         mieszkanieRepository.delete(mieszkanie);
     }
